@@ -1,19 +1,37 @@
 module.exports = {
     purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
-    darkMode: false,
+    darkMode: 'class',
     theme: {
         extend: {
-            colors: {
-                primary: '#FF0000',
-                secondary: '#00FF00',
-            },
             fontFamily: {
-                sans: ['Roboto', 'Arial', 'sans-serif'],
+                sans: [
+                    'ui-sans-serif',
+                    'system-ui',
+                    '-apple-system',
+                    'BlinkMacSystemFont',
+                    'Segoe UI',
+                    'Roboto',
+                    'Helvetica Neue',
+                    'Arial',
+                    'Noto Sans',
+                    'sans-serif',
+                    'Apple Color Emoji',
+                    'Segoe UI Emoji',
+                    'Segoe UI Symbol',
+                    'Noto Color Emoji',
+                ],
+            },
+            typography: {
+                DEFAULT: {
+                    css: {
+                        maxWidth: '100%',
+                    }
+                }
             },
         },
     },
     variants: {
         extend: {},
     },
-    plugins: [],
+    plugins: [require('@tailwindcss/typography'), require('@tailwindcss/forms')],
 };

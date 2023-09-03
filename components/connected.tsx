@@ -64,6 +64,7 @@ const ConnectedInner = ({
           authorAddress: address,
           nftName: prompt,
           imagePath: image,
+          username: username,
         }),
       });
 
@@ -91,25 +92,14 @@ const ConnectedInner = ({
   return (
     <>
       <h1 className="text-4xl font-bold mt-8">
-        Welcome <br />
+        Welcome, {username} <br />
       </h1>
-      <p>
-        Image: <span className="text-black">{image}</span>
-      </p>
-      <p>
-        Prompt: <span className="text-black">{prompt}</span>
-      </p>
-      <p>
-        Username: <span className="text-black">{username}</span>
-      </p>
-      <p>
-        Address: <span className="text-black">{address}</span>
-      </p>
       <Web3Button
         contractAddress={process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS!}
         action={() => mintWithSignature()}
+        {...(image ? null : { isDisabled: true })}
       >
-        Mint NFT
+        Create NFT
       </Web3Button>
 
     </>

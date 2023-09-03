@@ -8,7 +8,7 @@ export default async function server(
 ) {
   try {
     // De-structure the arguments we passed in out of the request body
-    const { authorAddress, nftName, imagePath } = JSON.parse(req.body);
+    const { authorAddress, nftName, imagePath, username } = JSON.parse(req.body);
 
     // You'll need to add your private key in a .env.local file in the root of your project
     // !!!!! NOTE !!!!! NEVER LEAK YOUR PRIVATE KEY to anyone!
@@ -45,6 +45,7 @@ export default async function server(
         description: "Mischa AI Generated NFT",
         properties: {
           // Add any properties you want to store on the NFT
+          creator: username,
         },
       },
     });
