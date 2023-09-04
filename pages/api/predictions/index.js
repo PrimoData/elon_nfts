@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   const prediction = await replicate.predictions.create({
     // Pinned to a specific version of Stable Diffusion
     // See https://replicate.com/stability-ai/sdxl
-    version: "0cbdcb85378ed45e55e7a40dd892a029ff0818477f8d105155c322eb8bfe2031",
+    version: "22ce62b272e492a5bc0d16ec16dbe05130b54e932dd78b6927a27b755dab9d63",
 
     // This is the text prompt that will be submitted by a form on the frontend
     input: { prompt: req.body.prompt },

@@ -108,7 +108,7 @@ const ConnectedInner = ({
           (
             <>
               <button
-                className="bg-blue-500 text-white font-semibold text-sm px-6 py-3 rounded-md shadow-lg cursor-not-allowed mx-auto max-w-xs opacity-60"
+                className="bg-black text-white px-6 py-3 rounded-md shadow-lg cursor-not-allowed mx-auto max-w-xs opacity-60"
                 type="button"
                 disabled
               >
@@ -121,7 +121,7 @@ const ConnectedInner = ({
       (
         <>
           <button
-            className="bg-blue-500 text-white font-semibold text-sm px-6 py-3 rounded-md shadow-lg cursor-not-allowed mx-auto max-w-xs opacity-60"
+            className="bg-black text-white px-6 py-3 rounded-md shadow-lg cursor-not-allowed mx-auto max-w-xs opacity-60"
             type="button"
             disabled
           >

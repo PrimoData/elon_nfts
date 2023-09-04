@@ -1,5 +1,5 @@
-# Mischa AI NFTs
+# Elon NFTs
 
 ## Introduction
 
-Generate an image using a fine tuned Stable Diffusion SXDL 1.0 model served by Replicate. Then mint the image as an NFT using Thirdweb on the Base blockchain.
+The dApp code for Elon NFTs, which are a collection of AI generated pictures of Elon Musk created by the community on the Base blockchain.

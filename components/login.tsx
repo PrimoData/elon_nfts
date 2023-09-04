@@ -60,7 +60,7 @@ export const Login: React.FC<Props> = ({
     return (
       <>
         <button
-          className="bg-blue-500 text-white px-6 py-3 rounded shadow hover:shadow-lg mr-1 mb-1"
+          className="bg-black text-white px-6 py-3 rounded shadow hover:shadow-lg mr-1 mb-1"
           type="button"
           onClick={handleShowModal}
         >
@@ -91,14 +91,14 @@ export const Login: React.FC<Props> = ({
               <br />
               {isLoading ? (
                 <div className="flex flex-col items-center space-y-4">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-500"></div>
-                  <p className="text-blue-500">Loading...</p>
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-black"></div>
+                  <p className="text-black">Loading...</p>
                 </div>
               ) : error ? (
                 <div className="flex flex-col items-center space-y-4">
                   <p className="text-red-500 font-medium">{error}</p>
                   <button
-                    className="px-6 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    className="px-6 py-2 text-white bg-black rounded-md hover:bg-black focus:outline-none focus:ring-2 focus:ring-black"
                     onClick={() => setError(undefined)}
                   >
                     Try again
@@ -109,19 +109,19 @@ export const Login: React.FC<Props> = ({
                   <input
                     type="text"
                     placeholder="Username"
-                    className="w-full px-4 py-2 mb-4 rounded-lg border-2 border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                    className="w-full px-4 py-2 mb-4 rounded-lg border-2 border-gray-300 focus:border-black-500 focus:ring-1 focus:ring-black-200"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                   />
                   <input
                     type="password"
                     placeholder="Password"
-                    className="w-full px-4 py-2 mb-4 rounded-lg border-2 border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                    className="w-full px-4 py-2 mb-4 rounded-lg border-2 border-gray-300 focus:border-black-500 focus:ring-1 focus:ring-black-200"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <button
-                    className="px-8 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    className="px-8 py-2 text-white bg-black rounded-md hover:bg-black-600 focus:outline-none focus:ring-2 focus:ring-black-200"
                     onClick={handleConnectWallet}
                   >
                     Login / Signup

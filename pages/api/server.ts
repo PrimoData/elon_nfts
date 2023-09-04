@@ -42,7 +42,7 @@ export default async function server(
       metadata: {
         name: nftName as string,
         image: imagePath as string,
-        description: "Mischa AI Generated NFT",
+        description: "Elon AI Generated NFT",
         properties: {
           // Add any properties you want to store on the NFT
           creator: username,

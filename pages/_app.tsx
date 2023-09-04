@@ -11,14 +11,14 @@ function MyApp({ Component, pageProps }: AppProps) {
       clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
       activeChain={activeChain}>
       <Head>
-        <title>Mischa NFT Generator</title>
+        <title>Elon NFTs</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta
           name="description"
-          content="thirdweb Example Repository to Showcase signature based minting on an NFT Collection contract"
+          content="NFT collection of AI generated pictures of Elon Musk created by the community on the Base blockchain."
         />
         <meta name="keywords" content="thirdweb signature based minting" />
-        <link id="favicon" rel="icon" href="https://spng.pngfind.com/pngs/s/67-672131_attentive-cat-silhouette-cat-with-long-tail-silhouette.png"></link>
+        <link id="favicon" rel="icon" href="https://abs.twimg.com/favicons/twitter.3.ico"></link>
 
       </Head>
       <Component {...pageProps} />
