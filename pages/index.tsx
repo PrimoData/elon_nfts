@@ -100,18 +100,19 @@ const Home: NextPage = () => {
 
           <div className="bg-white rounded-lg shadow-lg">
 
-            <form className="flex items-center space-x-4  pt-4 px-4" onSubmit={handleSubmit}>
-              <label className="font-semibold text-lg text-gray-700">Mischa</label>
+            <form className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 pt-4 px-4" onSubmit={handleSubmit}>
+              <label className="font-semibold text-lg text-gray-700 mb-2 md:mb-0">Mischa...</label>
               <input
                 type="text"
                 className="flex-grow px-4 py-2 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 name="prompt"
                 placeholder="on a mountaintop"
               />
-              <button type="submit" className="px-8 py-2 text-white bg-blue-500 rounded-md hover:shadow-lg">
+              <button type="submit" className="px-8 py-2 text-white bg-blue-500 rounded-md hover:shadow-lg md:w-auto">
                 Create Image
               </button>
             </form>
+
 
             <div className="image-wrapper mt-0 flex flex-col justify-center items-center bg-white pt-0 mt-0 pb-5 rounded-lg shadow-xl">
 
