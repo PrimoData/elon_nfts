@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Signer } from "ethers";
 import { connectToSmartWallet } from "../lib/wallet";
-import { Connected } from "./connected";
 
+interface Props {
+  onLoginSuccessSigner: (signer: Signer) => void;
+  onLoginSuccessUser: (username: string) => void;
+}
 
-export const Login = ({
-  prompt,
-  image
-}: {
-  prompt: string | null;
-  image: string | null;
+export const Login: React.FC<Props> = ({
+  onLoginSuccessSigner,
+  onLoginSuccessUser,
 }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -19,16 +19,19 @@ export const Login = ({
   const [error, setError] = useState<string | undefined>(undefined);
   const [showModal, setShowModal] = useState(false);
 
-  const connectWallet = async () => {
+  const handleConnectWallet = async () => {
     if (!username || !password) return;
     try {
       setIsLoading(true);
-      const wallet = await connectToSmartWallet(username, password, (status) =>
-        setLoadingStatus(status)
-      );
+      const wallet = await connectToSmartWallet(username, password, setLoadingStatus);
       const s = await wallet.getSigner();
       setSigner(s);
       setIsLoading(false);
+
+      // Notify the parent component of a successful login
+      onLoginSuccessUser(username);
+      onLoginSuccessSigner(s);
+
     } catch (e) {
       setIsLoading(false);
       console.error(e);
@@ -36,86 +39,102 @@ export const Login = ({
     }
   };
 
-  const closeModal = () => {
+  const handleCloseModal = () => {
     setShowModal(false);
-    setError(undefined); // Clear any error message when closing the modal
+    setError(undefined);
   };
 
-  return username && signer ? (
-    <Connected prompt={prompt} image={image} signer={signer} username={username} />
-  ) : (
-    <>
-      <button
-        className="bg-blue-500 text-white active:bg-pink-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-        type="button"
-        onClick={() => setShowModal(true)}
-      >
-        Login / Signup
-      </button>
+  const handleShowModal = () => {
+    setShowModal(true);
+  };
 
-      {showModal ? (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50 bg-gray-900">
-          <div className="relative bg-white p-6 mx-auto rounded-lg shadow-lg w-96">
-            <button
-              className="absolute right-5 text-gray-500 hover:text-gray-700"
-              onClick={closeModal}
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+  const renderLoggedIn = () => {
+    return (
+      <p className="font-bold">
+        Welcome, {username}!
+      </p>
+    );
+  };
+
+  const renderLoginForm = () => {
+    return (
+      <>
+        <button
+          className="bg-blue-500 text-white px-6 py-3 rounded shadow hover:shadow-lg mr-1 mb-1"
+          type="button"
+          onClick={handleShowModal}
+        >
+          Login / Signup
+        </button>
+
+        {showModal && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+            <div className="relative bg-white p-8 rounded-xl w-96 shadow-2xl">
+              <button
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                onClick={handleCloseModal}
               >
-                <path d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-            <h1 className="text-4xl font-bold mt-8">Login/Signup</h1>
-            {isLoading ? (
-              <div className="flex flex-col items-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-500"></div>
-                <p className="mt-4 text-blue-500">Loading...</p>
-              </div>
-            ) : error ? (
-              <div className="flex flex-col items-center">
-                <p className="text-red-500">{error}</p>
-                <button
-                  className="mt-4 px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300"
-                  onClick={() => setError(undefined)}
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  Try again
-                </button>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center">
-                <input
-                  type="text"
-                  placeholder="Username"
-                  className="w-full px-4 py-2 mb-4 rounded-lg border border-gray-300 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-300"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  className="w-full px-4 py-2 mb-4 rounded-lg border border-gray-300 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-300"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  className="px-8 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300"
-                  onClick={() => connectWallet()}
-                >
-                  Login / Signup
-                </button>
-              </div>
-            )}
+                  <path d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+              <h1 className="text-4xl font-semibold mb-5">Login / Signup</h1>
+              <p>Create your user credentials or enter your existing ones.</p>
+              <br />
+              {isLoading ? (
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-500"></div>
+                  <p className="text-blue-500">Loading...</p>
+                </div>
+              ) : error ? (
+                <div className="flex flex-col items-center space-y-4">
+                  <p className="text-red-500 font-medium">{error}</p>
+                  <button
+                    className="px-6 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    onClick={() => setError(undefined)}
+                  >
+                    Try again
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center space-y-4">
+                  <input
+                    type="text"
+                    placeholder="Username"
+                    className="w-full px-4 py-2 mb-4 rounded-lg border-2 border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    className="w-full px-4 py-2 mb-4 rounded-lg border-2 border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    className="px-8 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    onClick={handleConnectWallet}
+                  >
+                    Login / Signup
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
 
-      ) : null}
-    </>
-  );
+        )}
+      </>
+    );
+  };
+
+  return username && signer ? renderLoggedIn() : renderLoginForm();
 };

@@ -1,40 +1,42 @@
+import type { NextPage } from "next";
+import Image from "next/image";
+import React, { useState } from "react";
 import {
   ThirdwebNftMedia,
   useContract,
   useNFTs,
 } from "@thirdweb-dev/react";
-import type { NextPage } from "next";
-import React, { useState } from "react";
+import { Signer } from "ethers";
 import { Login } from "../components/login";
+import { MintNFT } from "../components/mintnft";
 
+interface Prediction {
+  output: string[];
+  status: string[];
+  detail: string[];
+  id: string[];
+}
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const Home: NextPage = () => {
-
-  // AI Stuff
-  interface Prediction {
-    output: string[];
-    status: string[];
-    detail: string[];
-    id: string[];
-  }
-
   const [prediction, setPrediction] = useState<Prediction | null>(null);
-  const image: string | null = prediction?.output && prediction?.output.length > 0 ? prediction?.output[prediction?.output.length - 1] : null;
+  const image = prediction?.output?.[prediction?.output?.length - 1] ?? null;
   const [error, setError] = useState<string | null>(null);
   const [promptValue, setPromptValue] = useState<string | null>(null);
+  const [username, setUsername] = useState("");
+  const [signer, setSigner] = useState<Signer | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const inputValue = `Mischa ${(e.target as any).prompt.value}`;
     setPromptValue(inputValue);
 
-    if (inputValue === null) {
-      // Handle the case where inputValue is null
+    if (!inputValue) {
       setError("Input value is null");
       return;
     }
+
     const response = await fetch("/api/predictions", {
       method: "POST",
       headers: {
@@ -44,11 +46,14 @@ const Home: NextPage = () => {
         prompt: inputValue.replaceAll("Mischa", "TOK"),
       }),
     });
+
     let prediction = await response.json();
+
     if (response.status !== 201) {
       setError(prediction.detail);
       return;
     }
+
     setPrediction(prediction);
 
     while (
@@ -58,106 +63,133 @@ const Home: NextPage = () => {
       await sleep(1000);
       const response = await fetch("/api/predictions/" + prediction.id);
       prediction = await response.json();
+
       if (response.status !== 200) {
         setError(prediction.detail);
         return;
       }
-      console.log({ prediction });
+
       setPrediction(prediction);
     }
   };
 
-
-  // Fetch the NFT collection from thirdweb via it's contract address.
   const { contract: nftCollection } = useContract(
-    process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS,
+    process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS!,
     "nft-collection"
   );
 
-  // Load all the minted NFTs in the collection
   const { data: nfts, isLoading: loadingNfts } = useNFTs(nftCollection);
 
   return (
-    <div className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gray-50 p-12 prose prose-slate font-sans">
+    <>
+      <div className="p-4">
+        <div className="container mx-auto flex justify-between items-center">
+          <p className="text-black text-2xl font-semibold">Mischa NFTs</p>
+          <Login onLoginSuccessSigner={setSigner} onLoginSuccessUser={setUsername} />
+        </div>
+      </div>
 
-      <h1 className="text-center">Mischa NFT Generator</h1>
+      <div className="relative flex flex-col justify-center overflow-hidden bg-gray-100 p-12 text-gray-800">
+        <div className="text-center prose prose-slate font-sans z-10">
+          <h1 className="text-5xl font-extrabold leading-tight mb-4">Mischa NFT Generator</h1>
+          <p className="text-lg leading-relaxed">
+            Create your own Mischa NFT in two easy steps by first generating an image,
+            then minting the NFT.*
+          </p>
+          <p className="text-sm italic">*Login required.</p>
 
-      <p className="text-center lead p-0 m-0">Create your own Mischa NFTs in two simple steps.</p>
+          <div className="bg-white rounded-lg shadow-lg">
 
-      <h3>Step 1. Generate Image</h3>
-      <form className="flex" onSubmit={handleSubmit}>
-        <p className="py-0 mt-5 pr-5 font-bold">Mischa </p>
-        <input
-          type="text"
-          className="w-full px-4 py-2 rounded-l-lg border border-gray-200 bg-white text-gray-800"
-          name="prompt"
-          placeholder="on a mountaintop"
-        />
-        <button className="px-8 py-2 font-semibold rounded-r-lg bg-blue-500 text-white hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800 transition duration-150 ease-in-out" type="submit">
-          Create Image
-        </button>
-      </form>
-
-      {error && <div className="text-red-500">{error}</div>}
-
-      {prediction && (
-        <>
-          {prediction.output ? (
-            <div className="image-wrapper mt-5">
-              <img
-                src={prediction.output[prediction.output.length - 1]}
-                alt="output"
-                className="w-1/4"
+            <form className="flex items-center space-x-4  pt-4 px-4" onSubmit={handleSubmit}>
+              <label className="font-semibold text-lg text-gray-700">Mischa</label>
+              <input
+                type="text"
+                className="flex-grow px-4 py-2 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                name="prompt"
+                placeholder="on a mountaintop"
               />
+              <button type="submit" className="px-8 py-2 text-white bg-blue-500 rounded-md hover:shadow-lg">
+                Create Image
+              </button>
+            </form>
+
+            <div className="image-wrapper mt-0 flex flex-col justify-center items-center bg-white pt-0 mt-0 pb-5 rounded-lg shadow-xl">
+
+              {/* Error Message */}
+              {error && <div className="text-red-600 text-lg font-medium mb-4">{error}</div>}
+
+              {/* Prediction Output */}
+              {prediction && (
+                <>
+                  {prediction.output ? (
+                    <Image
+                      src={prediction.output[prediction.output.length - 1]}
+                      alt="Generated NFT Image"
+                      width={300}
+                      height={300}
+                      className="rounded-lg mb-4"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center mt-4 space-y-4">
+                      <p className="text-lg font-semibold text-gray-800">Creating your image. Please wait ~1 minute...</p>
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-500"></div>
+                      <p className="text-sm text-gray-600">Status: <span className="text-blue-600 font-semibold">{prediction.status}</span></p>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* Buttons */}
+              <div className="flex flex-col items-center mt-4 space-y-4">
+                {signer ? (
+                  <MintNFT prompt={promptValue} image={image} signer={signer} username={username} />
+                ) : (
+                  <button
+                    className="bg-blue-500 text-white font-semibold text-sm px-6 py-3 rounded-md shadow-lg cursor-not-allowed mx-auto max-w-xs opacity-60"
+                    type="button"
+                    disabled
+                  >
+                    Login to Mint NFT
+                  </button>
+                )}
+              </div>
             </div>
-          ) : (
-            <>
-              <p>Image generating. This could take a minute...</p>
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-              <p>Status: {prediction.status}</p>
-            </>
-          )}
-        </>
-      )}
-      <h3>Step 2. Create NFT</h3>
-      <Login prompt={promptValue} image={image} />
 
-      <hr className="mb-0 mt-5" />
-
-      <div className="container mx-auto">
-        <h2 className="text-center">My Collection</h2>
-        <p className="text-center lead">Login to see yours...</p>
-      </div>
-
-      <hr className="mb-0 mt-5" />
-
-      <div className="container mx-auto">
-        <h2 className="text-center">Complete Collection</h2>
-        <p className="text-center lead">This is the complete collection of Mischa NFTs minted on the blockchain.</p>
-
-        {loadingNfts ? (
-          <p>Loading...</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-            {Array.isArray(nfts) &&
-              [...nfts].reverse().map((nft) => (
-                <div className="relative bg-white shadow-xl ring-1 ring-gray-900/5 sm:rounded-lg" key={nft.metadata.id.toString()}>
-                  <ThirdwebNftMedia
-                    metadata={nft.metadata}
-                    className="h-full w-full mx-auto p-2 m-0"
-                  />
-                  <div className="text-center mb-4">
-                    <h3 className="m-2">{nft.metadata.name}</h3>
-                    <p className="m-1">Created by: {nft.metadata.properties?.creator}</p>
-                    <a href={`https://base-goerli.blockscout.com/token/${process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS}/instance/${nft.metadata.id}`} target="_blank" className="text-blue-400 hover:text-blue-500">View on the blockchain</a>
-                  </div>
-                </div>
-              ))}
           </div>
-        )}
-      </div>
-    </div>
 
+        </div>
+      </div>
+
+
+      <div className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gray-50 px-12 pb-12 prose prose-slate font-sans">
+        <div className="container mx-auto">
+          <h2 className="text-center">Mischa NFT Collection</h2>
+          <p className="text-center lead">Complete collection of Mischa NFTs minted on the blockchain.</p>
+
+          {loadingNfts ? (
+            <p>Loading...</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+              {Array.isArray(nfts) &&
+                [...nfts].reverse().map((nft) => (
+                  <div className="relative bg-white shadow-xl ring-1 ring-gray-900/5 sm:rounded-lg" key={nft.metadata.id.toString()}>
+                    <ThirdwebNftMedia
+                      metadata={nft.metadata}
+                      className="h-full w-full mx-auto p-2 m-0"
+                    />
+                    <div className="text-center mb-4">
+                      <h3 className="m-2">{nft.metadata.name}</h3>
+                      {nft.metadata.properties && 'creator' in nft.metadata.properties && <p className="m-1">Created by: {(nft.metadata.properties.creator as string)}</p>}
+                      <a href={`https://base-goerli.blockscout.com/token/${process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS}/instance/${nft.metadata.id}`} target="_blank" className="text-blue-400 hover:text-blue-500">View on the blockchain</a>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+    </>
   );
 };
 

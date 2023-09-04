@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   useAddress,
   ThirdwebSDKProvider,
@@ -9,14 +10,14 @@ import { Signer } from "ethers";
 
 const activeChain = "base-goerli";
 
-export const Connected = ({
+export const MintNFT = ({
   prompt,
   image,
   username,
   signer,
 }: {
   prompt: string | null;
-  image: string | null;
+  image: string | null | null;
   username: string;
   signer: Signer;
 }) => {
@@ -90,18 +91,44 @@ const ConnectedInner = ({
   };
 
   return (
-    <>
-      <h1 className="text-4xl font-bold mt-8">
-        Welcome, {username} <br />
-      </h1>
-      <Web3Button
-        contractAddress={process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS!}
-        action={() => mintWithSignature()}
-        {...(image ? null : { isDisabled: true })}
-      >
-        Create NFT
-      </Web3Button>
-
-    </>
+    username ?
+      (
+        image ?
+          (
+            <Web3Button
+              contractAddress={process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS!}
+              action={() => mintWithSignature()}
+              className="blue-button"
+              {...(image ? null : { isDisabled: true })}
+            >
+              Create NFT
+            </Web3Button>
+          )
+          :
+          (
+            <>
+              <button
+                className="bg-blue-500 text-white font-semibold text-sm px-6 py-3 rounded-md shadow-lg cursor-not-allowed mx-auto max-w-xs opacity-60"
+                type="button"
+                disabled
+              >
+                Create an Image to Mint NFT
+              </button>
+            </>
+          )
+      )
+      :
+      (
+        <>
+          <button
+            className="bg-blue-500 text-white font-semibold text-sm px-6 py-3 rounded-md shadow-lg cursor-not-allowed mx-auto max-w-xs opacity-60"
+            type="button"
+            disabled
+          >
+            Log In to Mint NFT
+          </button>
+        </>
+      )
   );
+
 };
