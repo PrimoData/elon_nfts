@@ -64,7 +64,7 @@ export const Login: React.FC<Props> = ({
           type="button"
           onClick={handleShowModal}
         >
-          Login / Signup
+          Login to Mint NFT
         </button>
 
         {showModal && (

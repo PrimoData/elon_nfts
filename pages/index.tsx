@@ -85,7 +85,6 @@ const Home: NextPage = () => {
       <div className="p-4 font-sans">
         <div className="container mx-auto flex justify-between items-center">
           <p className="text-black text-2xl font-semibold">Elon NFTs</p>
-          <Login onLoginSuccessSigner={setSigner} onLoginSuccessUser={setUsername} />
         </div>
       </div>
 
@@ -145,13 +144,14 @@ const Home: NextPage = () => {
                 {signer ? (
                   <MintNFT prompt={promptValue} image={image} signer={signer} username={username} />
                 ) : (
-                  <button
-                    className="bg-black text-white text-sm px-6 py-3 rounded-md shadow-lg cursor-not-allowed mx-auto max-w-xs opacity-60"
-                    type="button"
-                    disabled
-                  >
-                    Login to Mint NFT
-                  </button>
+                  // <button
+                  //   className="bg-black text-white text-sm px-6 py-3 rounded-md shadow-lg cursor-not-allowed mx-auto max-w-xs opacity-60"
+                  //   type="button"
+                  //   disabled
+                  // >
+                  //   Login to Mint NFT
+                  // </button>
+                  <Login onLoginSuccessSigner={setSigner} onLoginSuccessUser={setUsername} />
                 )}
               </div>
             </div>
